@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIAP — Siapkan Impian, Atur Pilihan</title>
+<!-- Canvas Confetti Library untuk Efek Selebrasi -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+:root{
+  --rainbow-bar: linear-gradient(90deg, #ff597b, #ff8e53, #fec848, #07c8f9, #9b51e0);
+  --pink:#ff4d8d; --purple:#8a2be2; --mint:#20c997;
+  --ink:#1c2536; --muted:#64748b; --bg:#f4f7fc; --white:#fff;
+  --shadow:0 15px 35px rgba(138,43,226,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:'Plus Jakarta Sans',Inter,system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:0;transition:all .25s ease}
+
+/* NAVBAR RESPONSIVE */
+.nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:3px solid transparent;border-image:var(--rainbow-bar) 1}
+.navin{max-width:1120px;margin:auto;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{font-size:28px;font-weight:900;background:var(--rainbow-bar);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.logo small{display:block;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.3px;margin-top:2px;-webkit-text-fill-color:initial}
+.navlinks{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.navlinks button{background:transparent;color:var(--ink);padding:8px 12px;border-radius:20px;font-weight:800;font-size:13px}
+.navlinks button:hover{background:#f0f4ff;color:var(--pink);transform:translateY(-2px)}
+
+.container{max-width:1120px;margin:auto;padding:0 22px}
+
+/* HERO SECTION */
+.hero{
+  padding:40px 0 35px;
+  background: linear-gradient(180deg, rgba(255,230,240,0.6) 0%, rgba(224,242,254,0.6) 50%, rgba(244,247,25c,0) 100%);
+}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:25px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:2px solid #ffd1e8;color:var(--pink);padding:6px 14px;border-radius:999px;font-weight:800;font-size:12px;box-shadow:0 4px 12px rgba(255,77,141,.15)}
+h1{font-size:32px;line-height:1.2;margin:15px 0 12px;letter-spacing:-0.5px;color:#111827}
+h1 span{background:linear-gradient(90deg, #ff4d8d, #8a2be2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:26px;margin:0 0 10px;font-weight:900}
+.lead{font-size:15px;line-height:1.6;color:#4b5563;max-width:680px}
+
+/* BUTTONS */
+.btn{padding:12px 22px;border-radius:25px;background:linear-gradient(90deg, var(--pink), var(--purple));color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(255,77,141,.3)}
+.btn:hover{transform:scale(1.03);box-shadow:0 12px 25px rgba(138,43,226,.4)}
+.btn.alt{background:#fff;color:var(--purple);border:2px solid #e0d5ff;box-shadow:none}
+.btn.alt:hover{background:#f5f0ff}
+.btn.danger{background:#ef4444;color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.2)}
+.btn.danger:hover{background:#dc2626}
+.btn.small{padding:6px 12px;font-size:12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+
+/* HERO CARD & STATISTIK */
+.hero-card{background:#fff;border-radius:24px;padding:22px;box-shadow:var(--shadow);border:2px solid #f0e6ff}
+.stat-box{background:linear-gradient(135deg, #eef7ff, #f5f0ff);border:2px solid #dbeafe;border-radius:18px;padding:14px;margin-top:12px}
+.stat-number{font-size:32px;font-weight:900;background:linear-gradient(90deg, #1677d2, #8a2be2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+section{padding:40px 0}
+.section-head{margin-bottom:20px}
+.section-head p{color:var(--muted);margin:5px 0 0;line-height:1.5;font-size:14px}
+
+/* GRID SYSTEM ADAPTIF */
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+.card{background:var(--white);border:2px solid #eef2f6;border-radius:20px;padding:20px;box-shadow:0 8px 20px rgba(0,0,0,.03)}
+.card.clickable{cursor:pointer;transition:all .3s ease}
+.card.clickable:hover{transform:translateY(-4px);box-shadow:0 12px 25px rgba(138,43,226,.12);border-color:#d8b4fe}
+.card p{color:#64748b;line-height:1.6;font-size:14px}
+.chip{display:inline-block;padding:4px 10px;border-radius:999px;background:#f0fdf4;color:#15803d;font-size:11px;font-weight:800;border:1px solid #bbf7d0}
+
+/* LAYOUT TABS ADAPTIF HP/LAPTOP */
+.learn-layout{display:grid;grid-template-columns:1fr;gap:16px}
+.tabs{display:flex;flex-direction:column;gap:8px}
+.tab{padding:12px 16px;border-radius:14px;background:#fff;border:2px solid #eef2f6;text-align:left;font-weight:800;color:var(--ink);font-size:14px}
+.tab.active{background:linear-gradient(90deg, #f0f5ff, #fcf0ff);color:var(--purple);border-color:#d8b4fe;box-shadow:0 4px 12px rgba(138,43,226,.1)}
+.lesson{min-height:220px;padding:22px}
+.highlight-item{background:#fdf4ff;padding:10px 14px;border-radius:12px;border-left:4px solid var(--pink);font-size:13px;margin-top:8px}
+
+/* QUIZ & FORM */
+.quizbox{background:#fff;border:2px solid #f0e6ff;border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+.option-btn{width:100%;padding:12px 16px;margin:8px 0;border:2px solid #f0f4ff;background:#fff;border-radius:14px;text-align:left;font-weight:700;font-size:14px}
+.option-btn:hover{border-color:var(--purple);background:#fdf8ff}
+.result{margin-top:15px;padding:14px;border-radius:14px;display:none;font-weight:600;font-size:14px}
+.result.ok{display:block;background:#ecfdf5;color:#047857;border:2px solid #a7f3d0}
+.result.no{display:block;background:#fff1f2;color:#be123c;border:2px solid #fecdd3}
+
+/* DESAIN TERBARU PETA HIDUP */
+.future{display:grid;grid-template-columns:1fr;gap:16px}
+.future-item{
+  background:#fff;
+  border:2px solid #e2e8f0;
+  border-radius:20px;
+  padding:18px;
+  transition:all .3s ease;
+  position:relative;
+  box-shadow:0 4px 12px rgba(0,0,0,.02);
+}
+.future-item:hover{
+  border-color:#c084fc;
+  box-shadow:0 10px 25px rgba(138,43,226,.1);
+  transform:translateY(-3px);
+}
+.future-item.filled{
+  border-color:#a7f3d0;
+  background:linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);
+}
+.future-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+.future-icon-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.future-icon{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  background:#f3e8ff;
+  display:grid;
+  place-items:center;
+  font-size:16px;
+}
+.check-badge{
+  display:none;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#10b981;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  place-items:center;
+}
+.future-item.filled .check-badge{display:grid}
+.future-item textarea{
+  width:100%;
+  height:95px;
+  border:2px solid #f1f5f9;
+  border-radius:12px;
+  padding:12px;
+  resize:vertical;
+  outline:none;
+  font-size:13.5px;
+  transition:all .2s ease;
+  background:#fafafa;
+}
+.future-item textarea:focus{
+  border-color:var(--pink);
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(255,77,141,.1);
+}
+
+.progress-card{
+  background:linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border:2px solid #e0e7ff;
+  border-radius:20px;
+  padding:20px;
+  margin-top:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,.03);
+}
+.progress{
+  height:14px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:12px 0 8px;
+  padding:2px;
+}
+.progress i{
+  display:block;
+  height:100%;
+  background:var(--rainbow-bar);
+  border-radius:999px;
+  width:0;
+  transition:width .5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.story-form{display:grid;grid-template-columns:1fr;gap:10px}
+.story-form input,.story-form textarea{border:2px solid #f0f4ff;border-radius:14px;padding:12px;outline:none;font-size:14px;width:100%}
+.story-form input:focus,.story-form textarea:focus{border-color:var(--purple)}
+.story-form textarea{height:90px}
+.story-item{padding:16px;background:#fff;border:2px solid #eef2f6;border-left:5px solid var(--mint);border-radius:16px;margin:12px 0;position:relative}
+.story-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.reply-box{margin-top:10px;padding:12px;background:#f0f7ff;border-radius:12px;border:2px solid #bae6fd}
+
+/* MODAL ARTIKEL */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(28,37,54,.6);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-content{background:#fff;border-radius:24px;max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:24px;box-shadow:0 25px 50px rgba(0,0,0,.2);position:relative;border:2px solid #f0e6ff}
+.modal-close{position:absolute;top:16px;right:16px;background:#f1f5f9;border-radius:50%;width:34px;height:34px;display:grid;place-items:center;font-weight:900;cursor:pointer}
+
+.footer{padding:30px 0;background:#1e1b4b;color:#e0e7ff;position:relative}
+.footer::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--rainbow-bar)}
+
+/* MEDIA QUERIES */
+@media(min-width: 768px){
+  h1{font-size:42px}
+  .hero-grid{grid-template-columns:1.1fr .9fr;gap:35px}
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .learn-layout{grid-template-columns:260px 1fr}
+  .future{grid-template-columns:repeat(2,1fr)}
+  .story-form{grid-template-columns:1fr 1fr}
+  .story-form textarea{grid-column:1/-1}
+}
+@media(min-width: 1024px){
+  .future{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="navin">
+    <div class="logo">SIAP<small>Siapkan Impian, Atur Pilihan</small></div>
+    <div class="navlinks">
+      <button onclick="go('home')">Beranda</button>
+      <button onclick="go('belajar')">Belajar</button>
+      <button onclick="go('tahu')">Tahu</button>
+      <button onclick="go('merencanakan')">Rencana</button>
+      <button onclick="go('cerita')">Curhat</button>
+      <button onclick="go('berbagi')">Berbagi</button>
+    </div>
+  </div>
+</nav>
+
+<!-- BERANDA DENGAN VISUAL REMAJA & PELANGI -->
+<header class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge">RUANG EDUKASI KREATIF REMAJA</span>
+      <h1>Masa depan direncanakan, <span>bukan sekadar diimpikan!</span></h1>
+      <p class="lead">Pahami risiko perkawinan anak, latih kemampuan mengambil keputusan, dan susun peta masa depanmu menuju cita-cita, pendidikan, serta karier impian!</p>
+      <div class="actions">
+        <button class="btn" onclick="go('belajar')">Mulai Petualangan</button>
+        <button class="btn alt" onclick="go('merencanakan')">Rancang Peta Hidup</button>
+      </div>
+    </div>
+    
+    <div class="hero-card">
+      <span class="chip" style="background:#fef3c7;color:#d97706;border-color:#fde68a">FAKTA DAERAH • KALIMANTAN BARAT</span>
+      <h3 style="margin-top:10px;font-size:18px">Data Angka Perkawinan Anak</h3>
+      <p style="color:var(--muted);font-size:12px;margin:4px 0">Berdasarkan data BPS & Dinas PPPA Kalbar:</p>
+      
+      <div class="stat-box">
+        <div class="stat-number">11.44%</div>
+        <p style="margin:4px 0 0;font-size:12px;font-weight:700;color:var(--ink)">
+          Anak perempuan di Kalimantan Barat pernah menikah sebelum usia 18 tahun.
+        </p>
+      </div>
+
+      <div class="stat-box" style="background:linear-gradient(135deg, #e0f2fe, #f0fdf4);border-color:#bae6fd">
+        <div style="font-size:11px;font-weight:800;color:#0369a1;letter-spacing:.5px">TOTAL PENGUNJUNG WEB REAL-TIME</div>
+        <div id="visitorCount" class="stat-number" style="color:#0284c7">...</div>
+        <p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Remaja yang sudah belajar di platform SIAP!</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 1. SIAP BELAJAR -->
+<section id="belajar">
+  <div class="container">
+    <div class="section-head">
+      <h2>1. SIAP Belajar</h2>
+      <p>Edukasi interaktif pencegahan pernikahan dini, kesiapan fisik & mental, serta kunci sukses masa depanmu.</p>
+    </div>
+    <div class="learn-layout">
+      <div class="tabs" id="lessonTabs"></div>
+      <div class="card lesson" id="lessonContent"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. SIAP TAHU -->
+<section id="tahu" style="background:#fff">
+  <div class="container">
+    <div class="section-head">
+      <h2>2. SIAP Tahu</h2>
+      <p>Uji wawasanmu! Tebak mana fakta dan mana mitos seputar isu remaja & pernikahan dini.</p>
+    </div>
+    <div class="quizbox">
+      <span class="chip" id="factNum" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe">Pernyataan 1/4</span>
+      <h3 id="factText" style="font-size:18px;margin-top:12px;line-height:1.4"></h3>
+      
+      <div id="factOptions" style="margin-top:16px">
+        <button class="option-btn" onclick="checkFact(true)">FAKTA</button>
+        <button class="option-btn" onclick="checkFact(false)">MITOS</button>
+      </div>
+      
+      <div id="factResult" class="result"></div>
+      
+      <div class="actions" style="margin-top:15px">
+        <button class="btn small" id="nextFactBtn" onclick="nextFact()" style="display:none">Pernyataan Selanjutnya</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. SIAP MERENCANAKAN -->
+<section id="merencanakan">
+  <div class="container">
+    <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2>3. SIAP Merencanakan</h2>
+        <p>Tuliskan impianmu! Rancang target hidupmu sebelum melangkah ke masa depan.</p>
+      </div>
+      <button class="btn small" onclick="saveFuture()">Simpan Peta Hidup</button>
+    </div>
+    
+    <div class="future">
+      <div class="future-item" id="card-f1">
+        <div class="future-header">
+          <div class="future-icon-title">
+            <div class="future-icon">🎓</div>
+            <span class="chip">01 • PENDIDIKAN</span>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+        <h3 style="margin:4px 0 8px;font-size:14px">Cita-cita Pendidikan?</h3>
+        <textarea id="f1" placeholder="Contoh: Lulus SMA, kuliah jurusan Psikologi di UNTAN..."></textarea>
+      </div>
+
+      <div class="future-item" id="card-f2">
+        <div class="future-header">
+          <div class="future-icon-title">
+            <div class="future-icon">💼</div>
+            <span class="chip" style="background:#fef3c7;color:#b45309;border-color:#fde68a">02 • KARIER</span>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+        <h3 style="margin:4px 0 8px;font-size:14px">Profesi Impianmu?</h3>
+        <textarea id="f2" placeholder="Contoh: Desainer, wirausaha muda, konselor..."></textarea>
+      </div>
+
+      <div class="future-item" id="card-f3">
+        <div class="future-header">
+          <div class="future-icon-title">
+            <div class="future-icon">⚡</div>
+            <span class="chip" style="background:#f3e8ff;color:#6b21a8;border-color:#e9d5ff">03 • SKILL</span>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+        <h3 style="margin:4px 0 8px;font-size:14px">Skill yang Ingin Dikuasai?</h3>
+        <textarea id="f3" placeholder="Contoh: Public speaking, koding, bahasa asing..."></textarea>
+      </div>
+
+      <div class="future-item" id="card-f4">
+        <div class="future-header">
+          <div class="future-icon-title">
+            <div class="future-icon">💍</div>
+            <span class="chip" style="background:#fce7f3;color:#be185d;border-color:#fbcfe8">04 • NIKAH</span>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+        <h3 style="margin:4px 0 8px;font-size:14px">Target Usia Menikah?</h3>
+        <textarea id="f4" placeholder="Contoh: Matang emosional & finansial (Usia ideal 21/25 tahun)..."></textarea>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <b>Pencapaian Peta Hidup Kamu</b>
+        <span id="badgeAchievement" class="chip" style="background:#e0f2fe;color:#0369a1;border-color:#bae6fd">Belum Diisi</span>
+      </div>
+      <div class="progress"><i id="futureProgress"></i></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span id="futureProgressText" style="color:var(--muted);font-weight:700;font-size:12px">0 dari 4 target terisi</span>
+        <small style="color:var(--muted);font-size:11px">Isi semua target untuk selebrasi! 🎉</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. SIAP CERITA (REALTIME ONLINE DATABASE) -->
+<section id="cerita" style="background:#fff">
+  <div class="container">
+    <div class="section-head">
+      <h2>4. SIAP Cerita</h2>
+      <p>Ruang curhat & konsultasi anonim secara global. Cerita yang kamu kirimkan akan langsung muncul dan dibaca oleh semua orang!</p>
+    </div>
+    <div class="card">
+      <div class="story-form">
+        <input id="storyName" placeholder="Nama samaran / Anonim">
+        <input id="storyTopic" placeholder="Topik (Cita-cita, Keluarga, Hubungan)">
+        <textarea id="storyText" placeholder="Ceritakan pertanyaan atau keluh kesahmu secara aman di sini..."></textarea>
+      </div>
+      <button class="btn small" style="margin-top:12px" id="sendStoryBtn" onclick="submitStory()">Kirim Curhatan</button>
+      
+      <hr style="margin:20px 0;border:0;border-top:2px dashed #e2e8f0">
+      <h3 style="font-size:16px">Daftar Curhatan Global & Balasan Konselor</h3>
+      <div id="storyList" class="story-list">
+        <p style="color:var(--muted);font-size:13px">Memuat cerita dari server...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. SIAP BERBAGI -->
+<section id="berbagi">
+  <div class="container">
+    <div class="section-head">
+      <h2>5. SIAP Berbagi</h2>
+      <p>Klik kartu artikel di bawah untuk membaca info menarik selengkapnya dan bagikan ke teman-temanmu!</p>
+    </div>
+    <div class="grid" id="articleGrid"></div>
+  </div>
+</section>
+
+<!-- MODAL ARTIKEL -->
+<div class="modal-overlay" id="articleModal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeArticle()">✕</div>
+    <span class="chip" id="modalChip">ARTIKEL</span>
+    <h2 id="modalTitle" style="margin-top:10px;font-size:20px"></h2>
+    <div id="modalBody" style="line-height:1.6;color:#334155;margin-top:14px;font-size:14px"></div>
+    <hr style="margin:16px 0;border:0;border-top:2px solid #f0f4ff">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <button class="btn small" onclick="shareArticle()">Bagikan Artikel</button>
+      <button class="btn alt small" onclick="closeArticle()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="logo" style="-webkit-text-fill-color:initial;color:#fff">SIAP</div>
+    <p style="color:#a5b4fc;font-size:13px;margin-top:6px">Siapkan Impian, Atur Pilihan • Platform Edukasi Remaja & Pencegahan Pernikahan Dini.</p>
+  </div>
+</footer>
+
+<script>
+// JSONBIN CONFIGURATION (TERHUBUNG KE DATABASE MAS KAMU)
+const BIN_ID = "6ac86d0fac6210605a2174b0";
+const API_KEY = "$2a$10$nSkGKTIqCbEOxEZlIC6RjOD2tXT9LhS.JpFjBGZfntriVVia.23Jy";
+
+function go(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth"});
+}
+
+function initVisitorCounter() {
+  // Menggunakan CountAPI untuk memicu penambahan (+1) setiap kali halaman dimuat / direfresh
+  fetch('https://api.countapi.xyz/hit/siap_kalbar_app/visits')
+    .then(res => res.json())
+    .then(data => {
+      if(data && data.value){
+        document.getElementById('visitorCount').textContent = data.value.toLocaleString('id-ID');
+      } else {
+        document.getElementById('visitorCount').textContent = "128";
+      }
+    })
+    .catch(() => {
+      document.getElementById('visitorCount').textContent = "128";
+    });
+}
+
+const lessons = [
+ {
+   title: "1. Pengertian Perkawinan Anak", 
+   body: "Perkawinan anak adalah pernikahan di mana salah satu atau kedua pasangan berusia di bawah 18 tahun. Menurut UU No. 16 Tahun 2019, batas minimal usia pernikahan adalah 19 tahun, namun BKKBN merekomendasikan usia ideal minimal 21 tahun bagi perempuan dan 25 tahun bagi laki-laki.",
+   highlights: [
+     "Usia < 18 tahun masih anak-anak yang berhak bersekolah dan bermain.",
+     "Kematangan usia menentukan ketahanan mental & ekonomi dalam rumah tangga."
+   ]
+ },
+ {
+   title: "2. Dampak Fisik & Kesehatan", 
+   body: "Secara biologis, organ reproduksi remaja belum matang sempurna untuk mengandung dan melahirkan.",
+   highlights: [
+     "Risiko kematian ibu melahirkan 2x lebih tinggi pada usia remaja.",
+     "Ancaman tinggi timbulnya stunting (anak tumbuh pendek & terganggu perkembangannya)."
+   ]
+ },
+ {
+   title: "3. Dampak Psikologis & Sosial", 
+   body: "Menikah dini berisiko kehilangan masa remaja, putus sekolah, serta rentan stres emosional.",
+   highlights: [
+     "Tingginya risiko KDRT akibat emosi yang belum stabil.",
+     "Putus sekolah yang menjebak remaja dalam kemiskinan."
+   ]
+ },
+ {
+   title: "4. Pendewasaan Usia Perkawinan", 
+   body: "Gerakan mengutamakan sekolah dan merancang karier sebelum melangkah ke pernikahan.",
+   highlights: [
+     "5 Kesiapan: Fisik, Mental, Finansial, Skill, dan Sosial.",
+     "Fokus kejar cita-cita selagi muda!"
+   ]
+ }
+];
+
+function renderLessons(){
+ const tabs = document.getElementById("lessonTabs");
+ if(!tabs) return;
+ tabs.innerHTML = lessons.map((x,i)=>`<button class="tab ${i===0?"active":""}" onclick="showLesson(${i},this)">${x.title}</button>`).join("");
+ showLesson(0, tabs.children[0]);
+}
+
+function showLesson(i, el){
+ if(el){
+   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+   el.classList.add("active");
+ }
+ const x = lessons[i];
+ const highlightsHTML = x.highlights.map(h => `<div class="highlight-item">• ${h}</div>`).join("");
+ 
+ document.getElementById("lessonContent").innerHTML = `
+   <h3 style="font-size:20px;margin:0 0 10px">${x.title}</h3>
+   <p style="font-size:14px;line-height:1.6;color:#475569">${x.body}</p>
+   <div class="lesson-highlights">${highlightsHTML}</div>
+ `;
+}
+
+const facts = [
+ {q: "Menikah muda adalah solusi ampuh keluar dari masalah ekonomi keluarga.", isFact: false, exp: "MITOS! Menikah muda tanpa pekerjaan tetap justru memicu kemiskinan baru."},
+ {q: "Organ reproduksi remaja belum siap penuh untuk proses kehamilan.", isFact: true, exp: "FAKTA! Kehamilan remaja berisiko tinggi bagi keselamatan ibu & janin."},
+ {q: "Usia ideal menikah BKKBN adalah 21 tahun (perempuan) & 25 tahun (laki-laki).", isFact: true, exp: "FAKTA! Di usia ini mental, fisik, dan emosi sudah jauh lebih matang."},
+ {q: "Cinta saja sudah cukup untuk modal nikah dan bikin bahagia.", isFact: false, exp: "MITOS! Pernikahan butuh tanggung jawab finansial, komitmen, & kesiapan mental."}
+];
+
+let factIndex = 0;
+
+function renderFact(){
+ if(factIndex >= facts.length) return;
+ const item = facts[factIndex];
+ document.getElementById("factNum").textContent = `Pernyataan ${factIndex+1}/${facts.length}`;
+ document.getElementById("factText").textContent = `"${item.q}"`;
+ document.getElementById("factResult").className = "result";
+ document.getElementById("factResult").style.display = "none";
+ document.getElementById("nextFactBtn").style.display = "none";
+ document.getElementById("factOptions").style.display = "block";
+}
+
+function checkFact(userChoice){
+ const item = facts[factIndex];
+ const res = document.getElementById("factResult");
+ document.getElementById("factOptions").style.display = "none";
+ 
+ if(userChoice === item.isFact){
+   res.className = "result ok";
+   res.innerHTML = `<strong>Jawaban Tepat!</strong> <br>${item.exp}`;
+ } else {
+   res.className = "result no";
+   res.innerHTML = `<strong>Kurang Tepat!</strong> <br>${item.exp}`;
+ }
+ res.style.display = "block";
+ document.getElementById("nextFactBtn").style.display = "inline-block";
+}
+
+function nextFact(){
+ if(factIndex < facts.length - 1){
+   factIndex++;
+   renderFact();
+ } else {
+   document.getElementById("factNum").textContent = "Selesai!";
+   document.getElementById("factText").textContent = "Kamu luar biasa! Sudah paham mana Fakta & Mitos!";
+   document.getElementById("factOptions").style.display = "none";
+   const res = document.getElementById("factResult");
+   res.className = "result ok";
+   res.style.display = "block";
+   res.innerHTML = "Terus sebarkan edukasi positif ini ke teman-temanmu ya!";
+   document.getElementById("nextFactBtn").style.display = "none";
+ }
+}
+
+/* LOGIKA PETA HIDUP INTERAKTIF */
+let hasCelebrated = false;
+
+function loadFuture(){
+ ["f1","f2","f3","f4"].forEach(id=>{
+   const input = document.getElementById(id);
+   if(input){
+     input.value = localStorage.getItem(id) || "";
+     input.removeEventListener("input", updateProgress);
+     input.addEventListener("input", updateProgress);
+   }
+ });
+ updateProgress();
+}
+
+function updateProgress(){
+ const ids = ["f1","f2","f3","f4"];
+ let filledCount = 0;
+
+ ids.forEach(id => {
+   const el = document.getElementById(id);
+   const card = document.getElementById(`card-${id}`);
+   if(el && el.value.trim().length > 0){
+     filledCount++;
+     if(card) card.classList.add("filled");
+   } else {
+     if(card) card.classList.remove("filled");
+   }
+ });
+
+ const percentage = (filledCount / 4) * 100;
+ document.getElementById("futureProgress").style.width = percentage + "%";
+ document.getElementById("futureProgressText").textContent = `${filledCount} dari 4 target terisi`;
+
+ const badge = document.getElementById("badgeAchievement");
+ if(badge){
+   if(filledCount === 0){
+     badge.textContent = "Belum Diisi";
+     badge.style.background = "#e0f2fe"; badge.style.color = "#0369a1"; badge.style.borderColor = "#bae6fd";
+     hasCelebrated = false;
+   } else if(filledCount < 4){
+     badge.textContent = "Dalam Proses 🚀";
+     badge.style.background = "#fef3c7"; badge.style.color = "#b45309"; badge.style.borderColor = "#fde68a";
+     hasCelebrated = false;
+   } else {
+     badge.textContent = "Peta Hidup Lengkap! 🎉";
+     badge.style.background = "#dcfce7"; badge.style.color = "#15803d"; badge.style.borderColor = "#86efac";
+     if(!hasCelebrated){
+       triggerConfetti();
+       hasCelebrated = true;
+     }
+   }
+ }
+}
+
+function triggerConfetti(){
+  if(typeof confetti === 'function'){
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+}
+
+function saveFuture(){
+ ["f1","f2","f3","f4"].forEach(id=>{
+   const el = document.getElementById(id);
+   if(el) localStorage.setItem(id, el.value);
+ });
+ alert("Peta Hidupmu berhasil tersimpan!");
+ updateProgress();
+ triggerConfetti();
+}
+
+/* SISTEM CERITA GLOBAL (JSONBIN API) */
+function submitStory(){
+ const name = document.getElementById("storyName").value.trim() || "Anonim";
+ const topic = document.getElementById("storyTopic").value.trim() || "Umum";
+ const text = document.getElementById("storyText").value.trim();
+
+ if(!text){
+   alert("Tuliskan cerita atau pertanyaanmu dulu yaa.");
+   return;
+ }
+
+ const newItem = { id: Date.now(), name: name, topic: topic, text: text, reply: "" };
+
+ fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+   headers: { "X-Master-Key": API_KEY }
+ })
+ .then(res => res.json())
+ .then(data => {
+   let currentData = data.record || { stories: [] };
+   if(!Array.isArray(currentData.stories)) currentData.stories = [];
+   
+   currentData.stories.unshift(newItem);
+
+   return fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+     method: "PUT",
+     headers: {
+       "Content-Type": "application/json",
+       "X-Master-Key": API_KEY
+     },
+     body: JSON.stringify(currentData)
+   });
+ })
+ .then(() => {
+   alert("Cerita terkirim secara global! Semua pengguna dapat membaca cerita ini.");
+   document.getElementById("storyText").value = "";
+   document.getElementById("storyName").value = "";
+   document.getElementById("storyTopic").value = "";
+   renderStories();
+ })
+ .catch(() => alert("Gagal mengirim cerita. Cek koneksi internetmu."));
+}
+
+function renderStories(){
+ const container = document.getElementById("storyList");
+ if(!container) return;
+
+ fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+   headers: { "X-Master-Key": API_KEY }
+ })
+ .then(res => res.json())
+ .then(data => {
+   const list = (data.record && data.record.stories) ? data.record.stories : [];
+   if(list.length === 0){
+     container.innerHTML = `<p style="color:var(--muted);font-style:italic;font-size:13px">Belum ada cerita. Yuk jadi yang pertama bercerita!</p>`;
+     return;
+   }
+
+   container.innerHTML = list.map(x => `
+     <div class="story-item">
+       <div class="story-header">
+         <div>
+           <b>${escapeHtml(x.name)}</b> 
+           <span class="chip" style="background:#f3e8ff;color:#7e22ce;border-color:#d8b4fe;margin-left:6px">${escapeHtml(x.topic)}</span>
+         </div>
+       </div>
+       <div style="margin-top:8px;font-size:13px;line-height:1.5">${escapeHtml(x.text)}</div>
+       ${x.reply ? `
+         <div class="reply-box">
+           <span style="font-size:11px;font-weight:800;color:#0284c7;display:block;margin-bottom:4px">BALASAN KONSELOR SIAP</span>
+           <div style="font-size:13px;color:var(--ink);line-height:1.5">${escapeHtml(x.reply)}</div>
+         </div>
+       ` : ''}
+     </div>
+   `).join("");
+ })
+ .catch(() => {
+   container.innerHTML = `<p style="color:var(--muted);font-size:13px">Gagal memuat cerita dari server.</p>`;
+ });
+}
+
+const articles = [
+  {
+    chip: "ARTIKEL KESEHATAN",
+    title: "Mengapa Menikah Membutuhkan Kesiapan Matang?",
+    desc: "Pernikahan bukan cuma acara sehari, tapi komitmen seumur hidup yang butuh kesiapan fisik, finansial, dan emosional.",
+    content: `
+      <p>Banyak remaja menganggap pernikahan adalah jalan keluar dari masalah. Padahal, kehidupan rumah tangga butuh tanggung jawab besar.</p>
+      <h4>4 Pilar Kesiapan Menikah:</h4>
+      <ul>
+        <li><b>Kesiapan Fisik:</b> Organ reproduksi siap secara medis.</li>
+        <li><b>Kesiapan Emosional:</b> Mampu mengelola stres & konflik tanpa kekerasan.</li>
+        <li><b>Kesiapan Finansial:</b> Punya penghasilan mandiri.</li>
+        <li><b>Kesiapan Sosial:</b> Siap mengasuh anak secara bijak.</li>
+      </ul>
+    `
+  },
+  {
+    chip: "INFOGRAFIS MEDIS",
+    title: "Dampak Pernikahan Dini bagi Ibu & Bayi",
+    desc: "Ketahui risiko medis kehamilan remaja serta ancaman stunting pada anak yang dilahirkan.",
+    content: `
+      <p>Kehamilan di bawah usia 18 tahun termasuk berisiko tinggi (*high-risk*).</p>
+      <h4>Risiko Utama:</h4>
+      <p>1. <b>Anemia Berat & Preeklamsia:</b> Risiko komplikasi tinggi saat persalinan.</p>
+      <p>2. <b>Stunting Pada Bayi:</b> Bayi kekurangan gizi kronis sejak dalam kandungan.</p>
+    `
+  },
+  {
+    chip: "KIPRAH LOKAL",
+    title: "Gerakan Remaja Cegah Pernikahan Anak di Kalbar",
+    desc: "Peran aktif Forum Anak dan Duta GenRe Kalimantan Barat mengedukasi kawan sebaya.",
+    content: `
+      <p>Kalimantan Barat terus berjuang menekan angka perkawinan anak lewat peran aktif remaja sebaya.</p>
+      <h4>Aksi Nyata Remaja Kalbar:</h4>
+      <ul>
+        <li><b>Pendidik Sebaya:</b> Merangkul kawan yang berisiko putus sekolah.</li>
+        <li><b>Kampanye Kreatif:</b> Edukasi lewat media sosial.</li>
+      </ul>
+    `
+  }
+];
+
+function renderArticles(){
+  const grid = document.getElementById("articleGrid");
+  if(!grid) return;
+  grid.innerHTML = articles.map((a, i) => `
+    <div class="card clickable" onclick="openArticle(${i})">
+      <span class="chip" style="background:#fef2f2;color:#dc2626;border-color:#fecaca">${a.chip}</span>
+      <h3 style="margin-top:8px;font-size:16px">${a.title}</h3>
+      <p>${a.desc}</p>
+    </div>
+  `).join("");
+}
+
+function openArticle(i){
+  const a = articles[i];
+  document.getElementById("modalChip").textContent = a.chip;
+  document.getElementById("modalTitle").textContent = a.title;
+  document.getElementById("modalBody").innerHTML = a.content;
+  document.getElementById("articleModal").style.display = "flex";
+}
+
+function closeArticle(){
+  document.getElementById("articleModal").style.display = "none";
+}
+
+function shareArticle(){
+  const title = document.getElementById("modalTitle").textContent;
+  if (navigator.share) {
+    navigator.share({ title: title, text: `Yuk baca di SIAP: "${title}"`, url: window.location.href }).catch(()=>{});
+  } else {
+    alert("Tautan artikel berhasil disalin!");
+  }
+}
+
+function escapeHtml(s){
+ return s ? s.replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m])) : "";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+ initVisitorCounter();
+ renderLessons();
+ renderFact();
+ loadFuture();
+ renderStories();
+ renderArticles();
+});
+</script>
+</body>
+</html>
